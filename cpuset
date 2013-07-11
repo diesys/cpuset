@@ -1,0 +1,41 @@
+#!/bin/bash
+
+### Simple and useful script uses cpupower to set cpuspeed and governor
+#	Created by Diego Turtulici (turingsbite@gmail.com)
+#	Bugs: http://github.com/diesys
+#	License: Free software
+###
+
+case $1 in
+	-s|--powersave)
+	    echo "Setting powersave governor...";
+	    cpupower frequency-set -g powersave | grep "X";
+	    sudo cpupower frequency-set --max 1500MHz | grep "X";
+	    echo -e "Governor: Powersave\nMin: 800MHz\nMax: 1500MHz" > $HOME/.cpuset-actual;;
+	-o|--ondemand)
+	    echo "Setting ondemand governor...";
+	    cpupower frequency-set -g powersave | grep "X";
+	    sudo cpupower frequency-set --max 2300MHz | grep "X";
+	    echo -e "Gorvernor: Ondemand\nMin: 800MHz\nMax: 2300MHz" > $HOME/.cpuset-actual;;
+	-l|--lowest)
+	    echo "Setting lowest governor...";
+	    cpupower frequency-set -g powersave | grep "X";
+	    sudo cpupower frequency-set --max 800MHz | grep "X";
+	    echo -e "Governor: Lowest\nMin: 800MHz\nMax: 800MHz" > $HOME/.cpuset-actual;;
+	-p|performance)
+	    echo "Setting performance governor..."
+	    cpupower frequency-set -g performance | grep "X";
+	    echo -e "Governor: Performance\nMin: 800MHz\nMax: 2900MHz" > $HOME/.cpuset-actual;;
+	-i|--info)
+	    acpi && cat "$HOME/.cpuset-actual";;
+	-m|--min)
+	    sudo cpupower frequency-set --min "$2"MHz | grep "X";
+	    echo -e "$(cat $HOME/.cpuset-actual | grep Governor)\nMin: $2MHz\n$(cat $HOME/.cpuset-actual | grep Max)" > $HOME/.cpuset-actual;;
+	-M|--max)
+	    sudo cpupower frequency-set --max "$2"MHz | grep "X";
+	    echo -e "$(cat $HOME/.cpuset-actual | grep Governor)\n$(cat $HOME/.cpuset-actual | grep Min)\nMax: $2MHz" > $HOME/.cpuset-actual;;
+	-h|--help)
+	    echo -e "Set cpu governor with cpupower utils, \n\t -s | --powersave\n\t -p | --performance\n\t -i | --info to get infos\n\t -m | --min to set the minimum frequency (in MHz)\n\t -M | --max to set the maximum frequency (in MHz)\n\t -h | --help to see this\n";;
+	*)
+	    echo -e "Unknown option try -h or --help";;
+esac
